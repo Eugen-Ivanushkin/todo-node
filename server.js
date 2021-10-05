@@ -13,21 +13,21 @@ app.listen(3012, function () {
   console.log("Server running in port 3012");
 });
 
-app.get("/todostore", function (req, res) {
+app.get("/todos", function (req, res) {
   res.send("Hello API");
 });
 
-app.get("/todostore", function (req, res) {
+app.get("/todos", function (req, res) {
   res.send(todoStore);
 });
 
-app.post("/todostore", (req, res) => {
+app.post("/todos", (req, res) => {
   const task = req.body;
   todoStore.push(task);
   res.status(201).send({ message: "Successfully created", data: todoStore });
 });
 
-app.delete("/todostore/:id", (req, res) => {
+app.delete("/todos/:id", (req, res) => {
   const index = getIdxById(Number(req.params.id), todoStore);
   if (index !== -1) {
     todoStore.splice(index, 1);
@@ -37,7 +37,7 @@ app.delete("/todostore/:id", (req, res) => {
   }
 });
 
-app.put("/todostore/:id", (req, res) => {
+app.put("/todos/:id", (req, res) => {
   const index = getIdxById(Number(req.params.id), todoStore);
   if (index !== -1) {
     const modifyTask = todoStore.splice(index, 1)[0];
