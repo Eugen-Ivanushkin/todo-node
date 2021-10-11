@@ -7,9 +7,7 @@ module.exports = {
         text: req.body.taskName,
         isDone: false,
       });
-
       await task.save();
-
       res.status(201).send({ message: "Successfully, task added", data: task });
     } catch (err) {
       console.log(err);
@@ -19,9 +17,10 @@ module.exports = {
   getTasks: async (req, res) => {
     try {
       const allTasks = await ListItemModel.find();
-      res
-        .status(201)
-        .send({ message: "Successfully, get task", data: allTasks });
+      res.status(201).send({
+        message: "Successfully, get task",
+        data: allTasks,
+      });
     } catch (err) {
       console.log(err);
       res.status(500).send({ message: err.message });
@@ -29,8 +28,8 @@ module.exports = {
   },
   deleteTask: async (req, res) => {
     try {
-      const deleteTask = await ListItemModel.deleteOne({ _id: req.params.id });
-
+      // const deleteTask = await ListItemModel.deleteOne({ _id: req.params.id });
+      const deleteTask = await ListItemModel.deleteMany({ isDone: true });
       res
         .status(201)
         .send({ message: "Successfully, task deleted", data: deleteTask });
@@ -39,35 +38,35 @@ module.exports = {
       res.status(500).send({ message: err.message });
     }
   },
-  isDone: async (req, res) => {
-    const id = req.params.id;
-
-    ListItemModel.findById(id)
-      .then((model) => {
-        return Object.assign(model, { isDone: !model.isDone });
-      })
-      .then((model) => model.save())
-      .then((updateModel) => {
-        res.status(201).send({
-          message: "Successfully, task status updated",
-          data: updateModel,
+  deleteAllCompleted: async (req, res) => {
+    try {
+      const deleteTask = await ListItemModel.deleteMany({ isDone: true });
+      res
+        .status(201)
+        .send({
+          message: "Successfully,All completed tasks deleted",
+          data: deleteTask,
         });
-      })
-      .catch((err) => {
-        res.status(500).send({ message: err.message });
-      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({ message: err.message });
+    }
   },
   updateTask: async (req, res) => {
-    const id = req.params.id;
-    const newText = req.body.taskName;
-
+    console.log(req.body);
+    const id = req.body._id;
+    const newText = req.body.text;
+    const newStatus = req.body.isDone;
     try {
       const taskModel = await ListItemModel.findById(id);
-      const updateTask = Object.assign(taskModel, { text: newText });
+      const updateTask = Object.assign(taskModel, {
+        text: newText,
+        isDone: newStatus,
+      });
       await updateTask.save();
       res
         .status(201)
-        .send({ message: "Successfully, task text updated", data: updateTask });
+        .send({ message: "Successfully, task updated", data: updateTask });
     } catch (err) {
       res.status(500).send({ message: err.message });
     }

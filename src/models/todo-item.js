@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const ListItemModelShema = new Schema({
+const TodoItemModelShema = new Schema({
   text: String,
   isDone: Boolean,
 });
 
-module.exports = mongoose.model("ListItemModel", ListItemModelShema);
+module.exports = mongoose.model("ListItemModel", TodoItemModelShema);
