@@ -77,7 +77,6 @@ module.exports = {
     const newText = req.body.text;
     const newStatus = req.body.isDone;
     const newSort = req.body.sort;
-    co;
     try {
       const taskModel = await ListItemModel.findById(id);
       const updateTask = Object.assign(taskModel, {
