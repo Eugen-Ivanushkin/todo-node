@@ -3,6 +3,7 @@ const router = require('./src/api');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 const { Server } = require('socket.io');
 const Http = require('http');
@@ -16,13 +17,28 @@ const io = new Server(http, {
 });
 
 io.on('connect', (socket) => {
-  console.log(socket.id);
+  const userId = jwt.verify(socket.handshake.auth.token, 'secret').userId;
+  socket.join(userId);
 
-  socket.join('room #1');
-
-  socket.on('ADD_TODO', (task) => {
-    console.log('task', task);
-    socket.to('room #1').emit('TODO_ADDED', task);
+  socket.on('ADD_TODO', (task, token) => {
+    const userId = jwt.verify(token, 'secret').userId;
+    socket.to(userId).emit('TODO_ADDED', task);
+  });
+  socket.on('UPDATE_TODO', (task, token) => {
+    const userId = jwt.verify(token, 'secret').userId;
+    socket.to(`${userId}`).emit('TODO_UPDATED', task);
+  });
+  socket.on('DELETE_TODO', (task, token) => {
+    const userId = jwt.verify(token, 'secret').userId;
+    socket.to(userId).emit('TODO_DELETED', task);
+  });
+  socket.on('CLEAR_TODOS', (task, token) => {
+    const userId = jwt.verify(token, 'secret').userId;
+    socket.to(userId).emit('TODO_CLEARED', task);
+  });
+  socket.on('SORT_TODOS', (task, token) => {
+    const userId = jwt.verify(token, 'secret').userId;
+    socket.to(userId).emit('TODOS_SORTED', task);
   });
 });
 
